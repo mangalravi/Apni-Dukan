@@ -13,6 +13,9 @@ dotenv.config({
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 
+console.log("accountSid", accountSid)
+console.log("authToken", authToken)
+
 if (!accountSid || !authToken) {
   throw new Error("Twilio credentials are missing in .env")
 }
@@ -513,7 +516,7 @@ export const sendOtp = asyncHandler(async (req, res) => {
   // Update phone number if different
   if (user.phoneNumber !== phoneNumber) user.phoneNumber = phoneNumber
   console.log("user", user)
-  
+
   // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString()
   const otpExpiry = new Date(Date.now() + 5 * 60 * 1000) // 5 min

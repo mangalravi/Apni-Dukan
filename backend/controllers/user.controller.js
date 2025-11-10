@@ -7,9 +7,7 @@ import crypto from "crypto"
 import nodemailer from "nodemailer"
 import dotenv from "dotenv"
 import twilio from "twilio"
-dotenv.config({
-  path: "./.env",
-})
+dotenv.config()
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 
@@ -492,34 +490,36 @@ const resetPassword = asyncHandler(async (req, res) => {
 // 1️⃣ Request OTP
 export const sendOtp = asyncHandler(async (req, res) => {
   const { phoneNumber, user_id } = req.body
-
   if (!phoneNumber || !user_id) {
     return res
       .status(400)
-      .json({ message: "Phone number and user_id are required" })
+      .json({ message: "Phone number and User Id is required" })
+  }
+  const userId = user_id
+  if (!userId) {
+    return res.status(401).json({ message: "User not authenticated" })
   }
 
-  // Find existing user
-  const user = await User.findById(user_id)
+  const user = await User.findById(userId)
+  console.log("user", user)
   if (!user) return res.status(404).json({ message: "User not found" })
 
   const existingUser = await User.findOne({
     phoneNumber,
-    _id: { $ne: user_id },
+    _id: { $ne: userId },
   })
-
+  console.log("existingUser", existingUser)
   if (existingUser) {
     return res.status(400).json({
       message: "This phone number is already registered with another account",
     })
   }
-  // Update phone number if different
-  if (user.phoneNumber !== phoneNumber) user.phoneNumber = phoneNumber
-  console.log("user", user)
+  if (user.phoneNumber !== phoneNumber) {
+    user.phoneNumber = phoneNumber
+  }
 
-  // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString()
-  const otpExpiry = new Date(Date.now() + 5 * 60 * 1000) // 5 min
+  const otpExpiry = new Date(Date.now() + 5 * 60 * 1000) // expires in 5 min
 
   user.otp = otp
   user.otpExpiry = otpExpiry
@@ -529,7 +529,7 @@ export const sendOtp = asyncHandler(async (req, res) => {
     const message = await client.messages.create({
       body: `Your OTP code is ${otp}. It expires in 5 minutes.`,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: phoneNumber, // dynamic phone number
+      to: phoneNumber,
     })
 
     res.status(200).json({
@@ -537,7 +537,7 @@ export const sendOtp = asyncHandler(async (req, res) => {
       sid: message.sid,
     })
   } catch (err) {
-    console.error("Twilio Error:", err)
+    console.error("Twilio Error:", err.message)
     res.status(500).json({ message: "Failed to send OTP" })
   }
 })

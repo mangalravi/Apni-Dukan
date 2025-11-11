@@ -36,7 +36,7 @@ function App() {
     const interval = setInterval(checkTokenExpiry, 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, location]);
 
   return (
     <div className="App overflow-x-hidden">

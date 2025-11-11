@@ -41,7 +41,7 @@ const UpdateAccount = () => {
         phoneNumber: newPhoneNumber || "",
       });
     }
-  }, [user]);
+  }, [user, newPhoneNumber]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./Order.css";
+import "./Order?.css";
 import api from "../api/api";
 import { Link } from "react-router-dom";
 
@@ -37,26 +37,26 @@ const Order = () => {
         <p className="no-orders">No orders found.</p>
       ) : (
         orders.map((order) => (
-          <div className="order-card" key={order._id}>
+          <div className="order-card" key={order?._id}>
             <div className="order-header">
-              <h3>Order ID: {order._id}</h3>
+              <h3>Order ID: {order?._id}</h3>
               <span
-                className={`status-badge ${order.deliverdStatus.toLowerCase()}`}
+                className={`status-badge ${order?.deliverdStatus?.toLowerCase()}`}
               >
-                {order.deliverdStatus}
+                {order?.deliverdStatus}
               </span>
             </div>
             <div className="order-info">
               <p>
-                <strong>User:</strong> {order.userId.fullName} (
-                {order.userId.email})
+                <strong>User:</strong> {order?.userId?.fullName} (
+                {order?.userId.email})
               </p>
               <p>
                 <strong>Date:</strong>{" "}
-                {new Date(order.createdAt).toLocaleDateString()}
+                {new Date(order?.createdAt).toLocaleDateString()}
               </p>
               <p>
-                <strong>Total:</strong> ₹{order.totalAmount.toFixed(2)}
+                <strong>Total:</strong> ₹{order?.totalAmount.toFixed(2)}
               </p>
             </div>
             <div className="order-items">
@@ -71,11 +71,11 @@ const Order = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {console.log("order.cartItems", order.cartItems)}
-                  {order.cartItems.map((item) => (
-                    <tr key={item.productId._id}>
+                  {console.log("order?.cartItems", order?.cartItems)}
+                  {order?.cartItems.map((item) => (
+                    <tr key={item?.productId._id}>
                       <td>
-                        <Link to={`/product/${item.productId.slug}`}>
+                        <Link to={`/product/${item?.productId.slug}`}>
                           <img
                             src={item?.productId?.thumbnail}
                             alt={item?.productId?._id}
@@ -86,15 +86,15 @@ const Order = () => {
                       </td>
                       <td>
                         <Link
-                          to={`/product/${item.productId.slug}`}
+                          to={`/product/${item?.productId.slug}`}
                           style={{ textDecoration: "none", color: "#000" }}
                         >
-                          {item.name}
+                          {item?.name}
                         </Link>
                       </td>
-                      <td>{item.price.toFixed(2)}</td>
-                      <td>{item.quantity}</td>
-                      <td>{(item.price * item.quantity).toFixed(2)}</td>
+                      <td>{item?.price.toFixed(2)}</td>
+                      <td>{item?.quantity}</td>
+                      <td>{(item?.price * item?.quantity).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>

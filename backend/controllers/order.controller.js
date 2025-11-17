@@ -16,7 +16,7 @@ const createOrder = async (req, res, next) => {
       name: item.product.title,
       price: item.product.price,
       quantity: item.quanity,
-      slug : item.product.slug,
+      slug: item.product.slug,
     }))
     console.log("Creating order with items:", orderItems)
 
@@ -49,7 +49,7 @@ const createOrder = async (req, res, next) => {
 
 const getAllOrders = async (_, res, next) => {
   try {
-    const orders = await Order.find()
+    const orders = await Order.find({ userId: req.user._id })
       .populate("userId", "fullName email")
       .populate("cartItems.productId", "title price thumbnail slug")
     console.log("order", orders)

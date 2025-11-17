@@ -47,13 +47,13 @@ const createOrder = async (req, res, next) => {
   }
 }
 
-const getAllOrders = async (_, res, next) => {
+const getAllOrders = async (req, res, next) => {
   try {
     const orders = await Order.find({ userId: req.user._id })
       .populate("userId", "fullName email")
       .populate("cartItems.productId", "title price thumbnail slug")
     console.log("order", orders)
-    return res.json(new ApiResponse(200, "Orders fetched successfully", orders))
+    return res.json(new ApiResponse(200, "User Orders fetched successfully", orders))
   } catch (error) {
     next(error)
   }

@@ -18,7 +18,7 @@ dotenv.config({
 app.use(
   cors({
     origin:
-      process.env.CORS_ORIGINS ||
+      // process.env.CORS_ORIGINS ||
       "http://localhost:3000" ||
       "https://ecommerce-full-stack-green.vercel.app",
     credentials: true,
@@ -54,5 +54,11 @@ app.use("/api/v1/order", orderRoute)
 //payment routes
 
 app.use("/api/v1/payment", paymentRoute)
+
+app.use("/health-check", (req, res) => {
+  res.status(200).json({
+    wokring: "ok",
+  })
+})
 
 export { app }

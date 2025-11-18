@@ -3,6 +3,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://apni-dukan-production.up.railway.app/api/v1",
+  // baseURL: "http://localhost:7000/api/v1",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

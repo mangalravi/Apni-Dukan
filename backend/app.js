@@ -18,8 +18,7 @@ dotenv.config({
 app.use(
   cors({
     origin:
-      // process.env.CORS_ORIGINS ||
-      "http://localhost:3000" ||
+      process.env.CORS_ORIGINS ||
       "https://ecommerce-full-stack-green.vercel.app",
     credentials: true,
   })

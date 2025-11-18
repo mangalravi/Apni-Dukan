@@ -376,45 +376,60 @@ const updateAccountDetail = asyncHandler(async (req, res) => {
 
 // 1️⃣ Request password change
 const requestPasswordChange = asyncHandler(async (req, res) => {
-  const { email } = req.body
-  if (!email) throw new ApiError(400, "Email is required")
+  try {
+    const { email } = req.body
+    if (!email) throw new ApiError(400, "Email is required")
 
-  const user = await User.findOne({ email })
-  if (!user) throw new ApiError(404, "User not found")
+    const user = await User.findOne({ email })
+    if (!user) throw new ApiError(404, "User not found")
 
-  // Generate reset token
-  const resetToken = crypto.randomBytes(32).toString("hex")
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex")
 
-  // Hash token before saving
-  user.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex")
+    // Hash token before saving
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex")
 
-  user.resetPasswordExpiry = Date.now() + 15 * 60 * 1000 // 15 min expiry
-  await user.save({ validateBeforeSave: false })
+    user.resetPasswordExpiry = Date.now() + 15 * 60 * 1000 // 15 min expiry
+    await user.save({ validateBeforeSave: false })
 
-  // Send email with plain resetToken (not hashed)
-  const resetUrl = `${process.env.CORS_ORIGINS}/change-password/${resetToken}`
+    // Send email with plain resetToken (not hashed)
+    const resetUrl = `${process.env.CORS_ORIGINS}/change-password/${resetToken}`
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  })
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    })
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subject: "Password Reset Request",
-    text: `Click this link to reset your password: ${resetUrl}`,
-  })
+    await transporter
+      .sendMail({
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: "Password Reset Request",
+        text: `Click this link to reset your password: ${resetUrl}`,
+      })
+      .catch((err) => {
+        console.log("error in catch block send mail:", err)
+        throw new Error(err)
+      })
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Password reset email sent successfully"))
+    res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password reset email sent successfully"));
+
+      
+  } catch (error) {
+    console.log("error at line 425 catch block", error)
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error,
+    })
+  }
 })
 
 // // 2️⃣ Verify token
